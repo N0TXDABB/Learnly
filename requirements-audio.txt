@@ -1,0 +1,3 @@
+# Speech-to-text for lecture recordings. Runs on your computer; the first use downloads
+# the chosen Whisper model (base is about 145 MB).
+faster-whisper>=1.0

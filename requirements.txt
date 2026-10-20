@@ -1,0 +1,9 @@
+# Learnly runs on Python 3.10 to 3.13 (newer versions work once their packages are published).
+fastapi>=0.110,<1
+uvicorn>=0.29
+httpx>=0.27,<1
+PyJWT[crypto]>=2.8
+cryptography>=42
+pypdf>=4.2
+# Optional, for lecture recordings: pip install -r requirements-audio.txt
+# (or AI setup → Lecture recordings → Install, as the administrator)
