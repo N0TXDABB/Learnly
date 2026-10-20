@@ -1,0 +1,190 @@
+/* Solve (中環 Central): the homework solver, step questions and practice problems; and the Home page's
+   quick composer, journeys and "Today" panel. Mobile first: everything fits a 390 px phone. */
+
+/* -- shared --------------------------------------------------------------------------------------- */
+/* these blocks set their own display, which would otherwise beat the hidden attribute */
+:is(.solve-layout, .home-hero, .today) [hidden], .today[hidden] { display: none !important; }
+.solve-layout { align-items: start; }
+.solve-main { gap: 16px; min-width: 0; }
+.solve-layout .btn.small, .practice .btn.small, .quick-composer .btn { min-height: 40px; }
+.clock { color: var(--faint); font-variant-numeric: tabular-nums; }
+.card-label { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold-2); font-weight: 600; }
+
+/* -- composer (#/solve) ------------------------------------------------------------------------------ */
+.composer-card { display: flex; flex-direction: column; gap: 16px; transition: border-color 0.2s, box-shadow 0.2s; }
+.composer-card.dragging { border-color: var(--neon); box-shadow: var(--shadow), 0 0 0 3px rgba(0, 240, 255, 0.25); }
+.composer-title { font-size: clamp(24px, 3vw, 32px); }
+.photo-picker {
+  display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; justify-content: space-between;
+  padding: 16px; border-radius: 12px; border: 1px dashed rgba(0, 240, 255, 0.4); background: rgba(0, 240, 255, 0.04);
+}
+.photo-picker .notice { flex-basis: 100%; }
+.picker-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 220px; }
+.picker-text b { font-size: 17px; }
+.or-line { display: flex; align-items: center; gap: 12px; color: var(--faint); font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; }
+.or-line::before, .or-line::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.composer-card.has-photo .photo-picker, .composer-card.has-photo .or-line { display: none; }
+.question-area { display: grid; gap: 16px; }
+.composer-card.has-photo .question-area { grid-template-columns: minmax(0, 200px) minmax(0, 1fr); align-items: start; }
+.question-area .field { margin: 0; }
+.question-preview { margin-top: 10px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.03); }
+.question-preview .small { display: block; margin-bottom: 4px; }
+.question-preview .prose p:last-child { margin-bottom: 0; }
+.question-input { font-size: 16px; min-height: 130px; }
+.photo-preview { margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.photo-preview img { width: 100%; max-height: 260px; object-fit: contain; border-radius: 10px; border: 1px solid var(--line); background: #fff; }
+.photo-preview figcaption { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; font-size: 13px; }
+.composer-actions { justify-content: flex-end; }
+
+/* -- recent problems ----------------------------------------------------------------------------- */
+.recent-problems h3 { margin-bottom: 12px; }
+.recent-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.recent-list a { display: flex; flex-direction: column; gap: 4px; padding: 9px 11px; border-radius: 10px; color: var(--text); border: 1px solid transparent; text-decoration: none; }
+.recent-list a:hover { background: rgba(255, 255, 255, 0.04); text-decoration: none; }
+.recent-list a[aria-current=page] { border-color: var(--line-gold); background: rgba(212, 175, 55, 0.08); }
+.recent-list .q { font-size: 14px; overflow-wrap: anywhere; }
+.recent-list .meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; color: var(--muted); }
+
+/* -- the problem page (#/solve/<id>) -------------------------------------------------------------- */
+.solve-actions { margin-top: 18px; }
+.question-card .row.between { margin-bottom: 10px; }
+.tags-row { gap: 6px; }
+.question-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; }
+.question-layout:has(.question-photo) { grid-template-columns: minmax(0, 180px) minmax(0, 1fr); }
+.question-text { font-size: 17px; }
+.question-text p:last-child { margin-bottom: 0; }
+.photo-button { padding: 0; border: 1px solid var(--line); border-radius: 10px; background: #fff; cursor: zoom-in; overflow: hidden; display: block; width: 100%; }
+.photo-button img { display: block; width: 100%; max-height: 220px; object-fit: contain; }
+.photo-large { display: block; width: 100%; height: auto; border-radius: 10px; background: #fff; }
+
+/* MTR-style line: Question → Step 1 → … → Answer */
+.solve-progress { display: flex; flex-direction: column; gap: 8px; }
+.solve-line-wrap { overflow-x: auto; scrollbar-width: thin; }
+.solve-line { list-style: none; margin: 0; padding: 6px 4px 2px; display: flex; min-width: max-content; }
+.solve-line .stop { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 76px; font-size: 12px; color: var(--muted); }
+.solve-line .stop::before { content: ""; position: absolute; top: 9px; left: -50%; width: 100%; height: 4px; background: rgba(255, 255, 255, 0.1); z-index: 0; }
+.solve-line .stop:first-child::before { display: none; }
+.solve-line .stop[data-state=done]::before, .solve-line .stop[data-state=running]::before { background: linear-gradient(90deg, var(--mtr-island), var(--mtr-tsuen-wan)); }
+.solve-line .dot-stop { position: relative; z-index: 1; width: 22px; height: 22px; border-radius: 50%; background: var(--night); border: 4px solid var(--faint); transition: all 0.3s; }
+.solve-line .stop[data-state=done] .dot-stop { border-color: var(--gold); background: var(--gold); }
+.solve-line .stop[data-state=running] .dot-stop { border-color: var(--neon); box-shadow: 0 0 0 5px rgba(0, 240, 255, 0.15), 0 0 16px var(--neon); animation: pulse 1.2s infinite; }
+.solve-line .stop[data-state=failed] .dot-stop { border-color: var(--red); }
+.solve-line .stop[data-state=done] .name, .solve-line .stop[data-state=running] .name { color: var(--text); }
+.solve-status { margin: 0; font-size: 14px; color: var(--muted); }
+.thinking summary { cursor: pointer; color: var(--muted); font-size: 14px; }
+.thinking pre { white-space: pre-wrap; font-family: var(--font-body); font-size: 13px; color: var(--muted); max-height: 240px; overflow-y: auto; margin: 8px 0 0; }
+
+/* step cards */
+.step-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.step-card { padding: 18px 20px; border-left: 3px solid var(--gold); animation: step-in 0.35s ease; }
+.step-card.writing { border-left-color: var(--neon); }
+.step-card.writing .step-body::after { content: "▍"; color: var(--gold); animation: blink 1s steps(1) infinite; }
+@keyframes step-in { from { opacity: 0; transform: translateY(8px); } }
+.step-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.step-num { flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--gold); color: var(--night); font-family: var(--font-display); font-weight: 800; font-size: 19px; }
+.step-title { font-size: 20px; margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.step-body p:last-child { margin-bottom: 0; }
+.step-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.step-actions:empty { display: none; }
+.step-actions .ask-panel { flex-basis: 100%; }
+
+/* final answer */
+.answer-card { display: grid; gap: 14px; background: linear-gradient(160deg, rgba(0, 240, 255, 0.08), rgba(10, 17, 40, 0.86)); }
+.answer-part .kicker { margin: 0 0 6px; font-size: 12px; }
+.final-answer { font-size: 20px; font-weight: 600; color: var(--gold-2); }
+.final-answer p:last-child, .answer-part .prose p:last-child { margin-bottom: 0; }
+.whole-ask { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.whole-ask .ask-panel { align-self: stretch; }
+
+/* "Ask AI Tutor" panel */
+.ask-panel { margin-top: 4px; padding: 14px; border-radius: 12px; border: 1px solid rgba(0, 240, 255, 0.3); background: rgba(4, 9, 24, 0.6); display: flex; flex-direction: column; gap: 12px; }
+.ask-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+.ask-label { font-weight: 700; color: var(--neon); letter-spacing: 0.05em; }
+.ask-chip { min-height: 40px; color: var(--text); }
+.ask-chip:hover { border-color: var(--neon); }
+.ask-chip:disabled { opacity: 0.5; cursor: not-allowed; }
+.ask-form { display: flex; gap: 8px; }
+.ask-form input { flex: 1; min-width: 0; }
+.ask-log { display: flex; flex-direction: column; gap: 12px; }
+.ask-log:empty { display: none; }
+.ask-item { border-top: 1px solid var(--line); padding-top: 10px; }
+.ask-q { font-size: 13.5px; color: var(--muted); margin-bottom: 6px; overflow-wrap: anywhere; }
+.ask-q b { color: var(--gold-2); font-weight: 600; }
+.ask-a p:last-child { margin-bottom: 0; }
+
+/* -- practice problems ----------------------------------------------------------------------------- */
+.practice-controls { display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: flex-end; margin: 6px 0 14px; }
+.practice-choice { display: flex; flex-direction: column; gap: 6px; }
+.practice-choice .chip { min-height: 40px; min-width: 44px; justify-content: center; color: var(--text); }
+.practice-status:empty { display: none; }
+.practice-status { margin-bottom: 12px; }
+.practice-sets { display: flex; flex-direction: column; gap: 22px; }
+.practice-set { border-top: 1px solid var(--line-gold); padding-top: 16px; scroll-margin-top: calc(var(--topbar-h) + 12px); }
+.practice-set-head { margin-bottom: 12px; }
+.practice-set-head h3 { margin: 0; }
+.score { font-size: 13px; padding: 4px 10px; }
+.quiz-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.quiz-card { padding: 16px; border-radius: 12px; border: 1px solid var(--line); background: rgba(13, 22, 48, 0.75); display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.quiz-card[data-state=right] { border-color: rgba(0, 230, 118, 0.5); }
+.quiz-card[data-state=wrong] { border-color: rgba(255, 84, 104, 0.5); }
+.quiz-head { display: flex; justify-content: space-between; align-items: center; }
+.quiz-num { font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.quiz-mark { font-size: 20px; font-weight: 700; }
+.quiz-card[data-state=right] .quiz-mark, .quiz-card[data-state=right] .verdict .mark { color: var(--green); }
+.quiz-card[data-state=wrong] .quiz-mark, .quiz-card[data-state=wrong] .verdict .mark { color: var(--red); }
+.quiz-question p:last-child { margin-bottom: 0; }
+.answer-row { display: flex; gap: 8px; }
+.answer-row input { flex: 1; min-width: 0; }
+.verdict { font-size: 14px; min-height: 1.2em; }
+.verdict:empty { display: none; }
+.quiz-actions { gap: 8px; }
+.hint-box, .solution-box { padding: 10px 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.04); border-left: 3px solid var(--amber); font-size: 14px; }
+.solution-box { border-left-color: var(--gold); }
+.answer-line { font-weight: 600; color: var(--gold-2); margin-bottom: 6px; }
+.practice-summary { margin-top: 14px; }
+.mastered, .keep-going { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 12px 14px; border-radius: 12px; }
+.mastered { border: 1px solid rgba(0, 230, 118, 0.5); background: rgba(0, 40, 20, 0.5); }
+.mastered b { color: var(--green); font-size: 16px; }
+.keep-going { border: 1px solid rgba(255, 176, 32, 0.45); background: rgba(60, 40, 5, 0.45); }
+
+/* -- Home: quick composer, journeys, today --------------------------------------------------------- */
+.home-hero .lede { margin-bottom: 22px; }
+.quick-composer { max-width: 760px; display: flex; flex-direction: column; gap: 12px; padding: 16px; }
+.quick-composer textarea { min-height: 64px; font-size: 16px; }
+.hero-cta { margin-top: 22px; }
+.journey { display: flex; flex-direction: column; gap: 12px; }
+.journey h2 { margin: 0; }
+.journey .kicker { margin: 0; }
+.journey-steps { list-style: none; counter-reset: journey; margin: 0; padding: 0; display: grid; gap: 12px; flex: 1; }
+.journey-steps li { counter-increment: journey; position: relative; padding-left: 46px; min-height: 34px; display: flex; flex-direction: column; gap: 2px; }
+.journey-steps li::before { content: counter(journey); position: absolute; left: 0; top: 0; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; border: 2px solid var(--gold); color: var(--gold-2); font-family: var(--font-display); font-weight: 800; font-size: 17px; }
+.journey-steps li:not(:last-child)::after { content: ""; position: absolute; left: 15px; top: 34px; bottom: -12px; width: 2px; background: var(--line-gold); }
+.journey-steps b { font-size: 15.5px; }
+.journey-steps span { font-size: 14px; color: var(--muted); }
+.today-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.today-item { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.today-item .label { font-size: 12.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.today-item .value { font-family: var(--font-display); font-weight: 800; font-size: 38px; line-height: 1; color: var(--gold-2); }
+.today-item .chip { color: var(--text); text-decoration: none; }
+.today-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.today-list a { overflow-wrap: anywhere; }
+
+/* -- wider screens ------------------------------------------------------------------------------------- */
+@media (min-width: 700px) {
+  .quiz-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+}
+
+/* -- phones -------------------------------------------------------------------------------------------- */
+@media (max-width: 600px) {
+  .composer-card.has-photo .question-area, .question-layout:has(.question-photo) { grid-template-columns: minmax(0, 1fr); }
+  .photo-preview img, .photo-button img { max-height: 200px; }
+  .step-card { padding: 14px 14px 16px; }
+  .step-title { font-size: 18px; }
+  .composer-actions .btn.big { width: 100%; }
+  .composer-actions .spacer { display: none; }
+  .quick-composer .spacer { display: none; }
+  .quick-composer button[type=submit] { width: 100%; }
+  .ask-form { flex-direction: column; }
+  .practice-controls > .btn { width: 100%; }
+  .solve-actions .btn { flex: 1 1 auto; }
+}

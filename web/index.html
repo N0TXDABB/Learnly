@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Learnly: snap a homework problem for step-by-step help, and turn lecture notes into flashcards, quizzes and mock exams, with AI that runs on your own computer.">
+  <title>Learnly · Snap, solve, study</title>
+  <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet" href="/css/solve.css">
+  <link rel="stylesheet" href="/css/study.css">
+  <link rel="stylesheet" href="/vendor/katex/katex.min.css">
+  <script type="module" src="/js/app.js"></script>
+</head>
+<body>
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <div class="scrim" aria-hidden="true"></div>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="topbar">
+    <a class="brand" href="#/" aria-label="Learnly home">
+      <span id="logo"></span>
+      <span><span class="brand-name">Learn<b>ly</b></span><span class="brand-sub">香港溫習小幫手</span></span>
+    </a>
+    <nav class="nav" id="nav" aria-label="Districts"></nav>
+    <div class="top-actions" id="top-actions"></div>
+  </header>
+  <main id="main" tabindex="-1">
+    <noscript><div class="page"><div class="hero"><h1>Learnly</h1><p class="lede">Learnly needs JavaScript turned on.</p></div></div></noscript>
+  </main>
+  <footer class="statusbar" id="statusbar"></footer>
+  <div id="toasts" aria-live="polite"></div>
+</body>
+</html>
